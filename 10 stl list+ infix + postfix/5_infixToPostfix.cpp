@@ -1,41 +1,58 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
+
+int prec(char ch)
+{
+    if(ch=='(')
+        return 0;
+    if(ch=='+' || ch=='-')
+        return 1;
+    return 2;
+}
+
 int main()
 {
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-    cout.tie(0);
-
     string s;
-    cin >> s;
-    string ans = "";
-    stack<char> A;
+    cin>>s;
+    stack<char>st;
+    string postfix = "";
 
     for(int i=0; i<s.size(); i++)
     {
-        if(s[i]>='a' && s[i]<='z')
-            ans+=s[i];
-        else if(!A.empty() && (s[i]=='+' || s[i]=='-') && (A.top()=='*' || A.top()=='/'))
+        char now = s[i];
+        if(now >='a' && now <= 'z')
         {
-            while(!A.empty())
+            postfix += now;
+        }
+        else if(now == '(')
+            st.push(now);
+        else if(now==')')
+        {
+            while(st.top()!='(')
             {
-                char x = A.top();
-                ans+=x;
-                A.pop();
+                postfix += st.top();
+                st.pop();
             }
-            A.push(s[i]);
+            st.pop();
         }
         else
         {
-            A.push(s[i]);
+            while(st.size() && prec(st.top()) >= prec(now)  )
+            {
+                postfix += st.top();
+                st.pop();
+            }
+            st.push(now);
         }
     }
-    while(!A.empty())
+
+    while(st.size())
     {
-        char x = A.top();
-        ans+=x;
-        A.pop();
+        postfix += st.top();
+        st.pop();
     }
-    cout << ans;
+
+    cout<<postfix<<"\n";
+
     return 0;
 }
